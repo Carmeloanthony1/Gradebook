@@ -1,5 +1,5 @@
 const fs = require("fs").promises;
-const { readfile } = require("fs/promises");
+const { readfile, readFile } = require("fs/promises");
 const input = require('readline-sync');
 
 class HUMANIORA {
@@ -58,6 +58,36 @@ async function newdata(){
     await nambahdata(namafile);
     console.log("Data sudah di push!");
 }
+async function loadfile(){
+    let namafileload = input.question("Masukan namafile json : ");
+    try{
+        if(namafileload.length === 0){
+            console.log("File tidak memiliki isi, silahkan buat terlebih dahulu");
+            console.log("Memasuki mode newdata");
+            await newdata();
+        } else {
+            console.log("File saat ini : ", `${namafileload}.json`);
+            const datajson = await fs.readFile(`${namafileload}.json`, 'utf-8');
+            const daftarmatkul = JSON.parse(datajson);
+            if(daftarmatkul.length === 0){
+                console.log("Tidak ada isinya");
+            } else {
+                daftarmatkul.forEach((item, index) => {
+                    console.log(`${index+1}. Mata kuliah: ${item.matakuliah}`);
+                    console.log(`SKS: ${item.sks}`);
+                    console.log(`Tugas: ${item.tugasmatkul}`);
+                    console.log(`UTS: ${item.utsmatkul}`);
+                    console.log(`UAS: ${item.uasmatkul}`);
+                });
+            }
+        }
+    } catch (error) {
+        console.error("Gagal load file :", error.message);
+    }
+}
+async function loadDATA(){
+    await loadfile();
+}
 async function main(){
     console.log("Gradebook GPA system");
     console.log("1. New data");
@@ -67,7 +97,9 @@ async function main(){
         case "1":
             await newdata();
             break;
+        case "2":
+            await loadDATA();
+            break;
     }
 }   
-    
 main();
