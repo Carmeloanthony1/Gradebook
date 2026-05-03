@@ -1,5 +1,9 @@
-node_modules/
+# File sampah VS Code
 tempCodeRunnerFile.js
-Melodata.txt
-Demo3.json
 
+# File database dummy/error
+undefined.json
+Demo*.json
+
+# Folder library (penting biar ga berat pas push)
+node_modules/
