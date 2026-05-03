@@ -1,0 +1,17 @@
+[
+  {
+    "sks": 2,
+    "matakuliah": "Agama",
+    "tugasmatkul": 92,
+    "utsmatkul": 90,
+    "uasmatkul": 91,
+    "sikapmatkul": 82
+  },
+  {
+    "sks": 3,
+    "matakuliah": "DSA",
+    "tugasmatkul": 90,
+    "utsmatkul": 91,
+    "uasmatkul": 92
+  }
+]
