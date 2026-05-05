@@ -3,23 +3,31 @@ const { readfile, readFile } = require("fs/promises");
 const input = require('readline-sync');
 
 class HUMANIORA {
-    constructor(jumlahsks, nama, tugas, UTS, UAS, sikap){
+    constructor(jumlahsks, nama, tugas, UTS, UAS, sikap, Ptugas, PUTS, PUAS){
         this.sks = jumlahsks;
         this.matakuliah = nama;
         this.tugasmatkul = tugas;
         this.utsmatkul = UTS;
         this.uasmatkul = UAS;
         this.sikapmatkul = sikap;
+
+        this.persentugas = Ptugas;
+        this.persenUTS = PUTS;
+        this.persenUAS = PUAS;
     }
 }
 
 class BIDANG {
-    constructor(jumlahsks, nama, tugas, UTS, UAS){
+    constructor(jumlahsks, nama, tugas, UTS, UAS, Ptugas, PUTS, PUAS){
         this.sks = jumlahsks;
         this.matakuliah = nama;
         this.tugasmatkul = tugas;
         this.utsmatkul = UTS;
         this.uasmatkul = UAS;
+
+        this.persentugas = Ptugas;
+        this.persenUTS = PUTS;
+        this.persenUAS = PUAS;
     }
 }
 
@@ -41,8 +49,8 @@ async function nambahdata(namafile){
         const datalama = await fs.readFile(`${namafile}.json`, 'utf-8');
         daftardata = JSON.parse(datalama);
         console.log(`Sistem berhasil memuat ${daftardata.length}`);
-    } catch (error){
-        console.error("ERROR :", error.message);
+    } catch {
+        daftardata = [];
     }
     while (pilihan != 3){
         pilihan = input.questionInt("1.UMUM/2.BIDANG/3.EXIT");
@@ -50,15 +58,20 @@ async function nambahdata(namafile){
                 let jumlahsks = input.questionInt("Berapa SKS pada mata kuliah ini : ");
                 let nama = input.question("apa nama mata kuliah ini : ");
                 let tugas = input.questionFloat("Berapa nilai tugas anda : ");
+                let persentugas = input.questionFloat("Berapa persen nilai tugas: ");
+
                 let UTS = input.questionFloat("Berapa nilai UTS anda : ");         
+                let persenUTS = input.questionFloat("Berapa persen nilai UTS: ");
+
                 let UAS = input.questionFloat("Berapa nilai UAS anda : ");   
-                
+                let persenUAS = input.questionFloat("Berapa persen nilai UAS: ");
+
                 let dataBARU;
                 if (pilihan === 1){
                     let sikap = input.questionFloat("Berapa nilai skap anda :");
-                    dataBARU = new HUMANIORA(jumlahsks, nama, tugas, UTS, UAS, sikap);
+                    dataBARU = new HUMANIORA(jumlahsks, nama, tugas, UTS, UAS, sikap, persentugas, persenUTS, persenUAS);
                 } else if (pilihan === 2){
-                    dataBARU = new BIDANG(jumlahsks, nama, tugas, UTS, UAS);
+                    dataBARU = new BIDANG(jumlahsks, nama, tugas, UTS, UAS, persentugas, persenUTS, persenUAS);
                 }
                 daftardata.push(dataBARU);
                 console.log("Berhasil menambahkan data");
@@ -99,9 +112,9 @@ async function loadfile(namafileload){
             daftarmatkul.forEach((item, index) => {
                 console.log(`${index+1}. Mata kuliah: ${item.matakuliah}`);
                 console.log(`SKS: ${item.sks}`);
-                console.log(`Tugas: ${item.tugasmatkul}`);
-                console.log(`UTS: ${item.utsmatkul}`);
-                console.log(`UAS: ${item.uasmatkul}`);
+                console.log(`Tugas: ${item.tugasmatkul} | Bobot: ${item.Ptugas}`);
+                console.log(`UTS: ${item.utsmatkul} | Bobot: ${item.PUTS}`);
+                console.log(`UAS: ${item.uasmatkul} | Bobot: ${item.PUAS}`);
                 if(item.sks = 2){
                     console.log(`SIKAP: ${item.sikapmatkul}`);
                 } 
@@ -126,10 +139,56 @@ async function loadDATA(){
         console.log("Gagal menambahkan data");
     }
 }
+async function hitungipk(namafile){
+    try {
+        const datajson = await fs.readFile(`${namafile}.json`, 'utf-8');
+        const daftarmatkul = JSON.parse(datajson); //proses mengubah teks jadi smth yang bisa di olah oleh js
+
+        let totalpoin = 0;
+        let totalsks = 0;
+
+        daftarmatkul.forEach((item) => {
+            let hitung = (item.tugasmatkul *(item.persentugas/100)) + (item.utsmatkul *(item.persenUTS/100)) + (item.uasmatkul *(item.persenUAS/100));
+        });
+
+        if(item.sikapmatkul !== undefined){
+            hitung = (hitung * 0.9) + (item.sikapmatkul * 0.1);
+        }
+        
+        let bobot = 0;
+        if(hitung >= 85){
+            bobot = 4.0;
+        } else if(hitung >= 80){
+            bobot = 3.7;            
+        } else if(hitung >= 75){
+            bobot = 3.3;
+        } else if(hitung >= 70){
+            bobot = 3.0;
+        } else if(hitung >= 65){
+            bobot = 2.7;
+        } else if(hitung >= 60){
+            bobot = 2.3;
+        } else if(hitung >= 55){
+            bobot = 2.0;
+        } else if(hitung >= 45){
+            bobot = 1.0;
+        } else if (hitung < 45){
+            bobot = 0;
+        }
+
+        totalpoin += (bobot * item.sks);
+        totalsks += item.sks;
+        console.log(`${item.matakuliah}: Nilai = ${to.Fixed(2)}`);
+
+    } catch(error){
+        console.log("Error:", error.message);
+    }
+}
 async function main(){
     console.log("Gradebook GPA system");
     console.log("1. New data");
     console.log("2. Load data");
+    console.log("3. Hitung data");
     let pilihan = input.question("Pilih :");
     switch(pilihan){
         case "1":
@@ -138,6 +197,9 @@ async function main(){
         case "2":
             await loadDATA();
             break;
+        case "3":
+            await hitungipk(namafile);
+            break;
     }
-}   
+}           
 main();
