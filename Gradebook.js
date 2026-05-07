@@ -3,14 +3,15 @@ const { readfile, readFile } = require("fs/promises");
 const input = require('readline-sync');
 
 class HUMANIORA {
-    constructor(jumlahsks, nama, tugas, UTS, UAS, sikap, Ptugas, PUTS, PUAS){
+    constructor(jumlahsks, nama, tugas, UTS, UAS, sikap, Psikap, Ptugas, PUTS, PUAS){
+        this.tipe = "Humaniora";
         this.sks = jumlahsks;
         this.matakuliah = nama;
         this.tugasmatkul = tugas;
         this.utsmatkul = UTS;
         this.uasmatkul = UAS;
         this.sikapmatkul = sikap;
-
+        this.persensikap = Psikap;
         this.persentugas = Ptugas;
         this.persenUTS = PUTS;
         this.persenUAS = PUAS;
@@ -19,6 +20,7 @@ class HUMANIORA {
 
 class BIDANG {
     constructor(jumlahsks, nama, tugas, UTS, UAS, Ptugas, PUTS, PUAS){
+        this.tipe = "Bidang";
         this.sks = jumlahsks;
         this.matakuliah = nama;
         this.tugasmatkul = tugas;
@@ -69,7 +71,8 @@ async function nambahdata(namafile){
                 let dataBARU;
                 if (pilihan === 1){
                     let sikap = input.questionFloat("Berapa nilai skap anda :");
-                    dataBARU = new HUMANIORA(jumlahsks, nama, tugas, UTS, UAS, sikap, persentugas, persenUTS, persenUAS);
+                    let persensikap = input.questionFloat("Berapa persen nilai sikap :");
+                    dataBARU = new HUMANIORA(jumlahsks, nama, tugas, UTS, UAS, sikap, persensikap, persentugas, persenUTS, persenUAS);
                 } else if (pilihan === 2){
                     dataBARU = new BIDANG(jumlahsks, nama, tugas, UTS, UAS, persentugas, persenUTS, persenUAS);
                 }
@@ -94,7 +97,7 @@ async function newdata(){
     await nambahdata(namafile);
     console.log("Data sudah di push!");
 }
-async function loadfile(namafileload){
+async function loadfile(){
     namafileload = input.question("Masukan namafile json : ");
     try{
         if(namafileload.length === 0){
@@ -112,11 +115,11 @@ async function loadfile(namafileload){
             daftarmatkul.forEach((item, index) => {
                 console.log(`${index+1}. Mata kuliah: ${item.matakuliah}`);
                 console.log(`SKS: ${item.sks}`);
-                console.log(`Tugas: ${item.tugasmatkul} | Bobot: ${item.Ptugas}`);
-                console.log(`UTS: ${item.utsmatkul} | Bobot: ${item.PUTS}`);
-                console.log(`UAS: ${item.uasmatkul} | Bobot: ${item.PUAS}`);
-                if(item.sks = 2){
-                    console.log(`SIKAP: ${item.sikapmatkul}`);
+                console.log(`Tugas: ${item.tugasmatkul} | Bobot: ${item.persentugas}`);
+                console.log(`UTS: ${item.utsmatkul} | Bobot: ${item.persenUTS}`);
+                console.log(`UAS: ${item.uasmatkul} | Bobot: ${item.persenUAS}`);
+                if(item.sikapmatkul !== undefined){
+                    console.log(`SIKAP: ${item.sikapmatkul} | Bobot: ${item.persensikap}`);
                 } 
             });
         }
@@ -139,47 +142,49 @@ async function loadDATA(){
         console.log("Gagal menambahkan data");
     }
 }
-async function hitungipk(namafile){
+async function hitungipk(){
     try {
+        let namafile = input.question("Masukan nama file yang ingin dihitung: ");
         const datajson = await fs.readFile(`${namafile}.json`, 'utf-8');
         const daftarmatkul = JSON.parse(datajson); //proses mengubah teks jadi smth yang bisa di olah oleh js
 
         let totalpoin = 0;
         let totalsks = 0;
-
         daftarmatkul.forEach((item) => {
-            let hitung = (item.tugasmatkul *(item.persentugas/100)) + (item.utsmatkul *(item.persenUTS/100)) + (item.uasmatkul *(item.persenUAS/100));
+            let hitung = 0;
+            if(item.tipe === "Humaniora"){ //untuk humaniora
+                hitung = (item.tugasmatkul * (item.persentugas / 100)) + (item.utsmatkul * (item.persenUTS / 100)) + (item.uasmatkul * (item.persenUAS / 100)) + (item.sikapmatkul * (item.persensikap / 100));
+                console.log(`[Humaniora] : ${item.matakuliah}`);
+            } else {
+                hitung = (item.tugasmatkul * (item.persentugas / 100)) + (item.utsmatkul * (item.persenUTS / 100)) + (item.uasmatkul * (item.persenUAS / 100));
+                console.log(`[Bidang] : ${item.matakuliah}`);
+            }
+
+            let bobot = 0;
+            if(hitung >= 85){
+                bobot = 4.0;
+            } else if(hitung >= 80){
+                bobot = 3.7;            
+            } else if(hitung >= 75){
+                bobot = 3.3;
+            } else if(hitung >= 70){
+                bobot = 3.0;
+            } else if(hitung >= 65){
+                bobot = 2.7;
+            } else if(hitung >= 60){
+                bobot = 2.3;
+            } else if(hitung >= 55){
+                bobot = 2.0;
+            } else if(hitung >= 45){
+                bobot = 1.0;
+            } else if (hitung < 45){
+                bobot = 0;
+            }
+
+            totalpoin += (bobot * item.sks);
+            totalsks += item.sks;
+            console.log(`${item.matakuliah}: Nilai = ${hitung.toFixed(2)}`);
         });
-
-        if(item.sikapmatkul !== undefined){
-            hitung = (hitung * 0.9) + (item.sikapmatkul * 0.1);
-        }
-        
-        let bobot = 0;
-        if(hitung >= 85){
-            bobot = 4.0;
-        } else if(hitung >= 80){
-            bobot = 3.7;            
-        } else if(hitung >= 75){
-            bobot = 3.3;
-        } else if(hitung >= 70){
-            bobot = 3.0;
-        } else if(hitung >= 65){
-            bobot = 2.7;
-        } else if(hitung >= 60){
-            bobot = 2.3;
-        } else if(hitung >= 55){
-            bobot = 2.0;
-        } else if(hitung >= 45){
-            bobot = 1.0;
-        } else if (hitung < 45){
-            bobot = 0;
-        }
-
-        totalpoin += (bobot * item.sks);
-        totalsks += item.sks;
-        console.log(`${item.matakuliah}: Nilai = ${to.Fixed(2)}`);
-
     } catch(error){
         console.log("Error:", error.message);
     }
@@ -198,7 +203,7 @@ async function main(){
             await loadDATA();
             break;
         case "3":
-            await hitungipk(namafile);
+            await hitungipk();
             break;
     }
 }           
