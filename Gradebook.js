@@ -154,10 +154,8 @@ async function hitungipk(){
             let hitung = 0;
             if(item.tipe === "Humaniora"){ //untuk humaniora
                 hitung = (item.tugasmatkul * (item.persentugas / 100)) + (item.utsmatkul * (item.persenUTS / 100)) + (item.uasmatkul * (item.persenUAS / 100)) + (item.sikapmatkul * (item.persensikap / 100));
-                console.log(`[Humaniora] : ${item.matakuliah}`);
             } else {
                 hitung = (item.tugasmatkul * (item.persentugas / 100)) + (item.utsmatkul * (item.persenUTS / 100)) + (item.uasmatkul * (item.persenUAS / 100));
-                console.log(`[Bidang] : ${item.matakuliah}`);
             }
 
             let bobot = 0;
@@ -183,8 +181,13 @@ async function hitungipk(){
 
             totalpoin += (bobot * item.sks);
             totalsks += item.sks;
-            console.log(`${item.matakuliah}: Nilai = ${hitung.toFixed(2)}`);
+            console.log(`[${item.matakuliah}]: Nilai = ${hitung.toFixed(2)}`);
         });
+        if(totalsks > 0){
+            let ipk = totalpoin/totalsks;
+            console.log(`Total sks : ${totalsks}`);
+            console.log(`Total GPA : ${ipk.toFixed(2)}`);
+        }
     } catch(error){
         console.log("Error:", error.message);
     }
