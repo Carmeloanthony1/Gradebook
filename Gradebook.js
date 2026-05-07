@@ -33,6 +33,7 @@ class BIDANG {
     }
 }
 
+
 async function buatTXTbaru(){ //function sendiri untuk newdata;
     let namafile = input.question("Masukan nama file yang di inginkan : ");
     try {
@@ -55,7 +56,7 @@ async function nambahdata(namafile){
         daftardata = [];
     }
     while (pilihan != 3){
-        pilihan = input.questionInt("1.UMUM/2.BIDANG/3.EXIT");
+        pilihan = input.questionInt("1.UMUM/2.BIDANG/3.EXIT : ");
             if(pilihan === 1 || pilihan === 2){
                 let jumlahsks = input.questionInt("Berapa SKS pada mata kuliah ini : ");
                 let nama = input.question("apa nama mata kuliah ini : ");
@@ -192,11 +193,64 @@ async function hitungipk(){
         console.log("Error:", error.message);
     }
 }
+
+async function whatifnilai(){
+    let targetakhir = input.question("Ingin mencari nilai berapa? : ");
+    let pilihan = input.question("(1) Humaniora / (2) Bidang : ");
+    console.log("Tulis 0 pada nilai yang belum ada");
+    while(pilihan != 3){
+        if(pilihan === 1 || pilihan === 2 ){
+            let tugas = input.questionFloat("Berapa nilai tugas anda : ");
+            let persentugas = input.questionFloat("Berapa persen nilai tugas: ");
+
+            let UTS = input.questionFloat("Berapa nilai UTS anda : ");         
+            let persenUTS = input.questionFloat("Berapa persen nilai UTS: ");
+
+            let UAS = input.questionFloat("Berapa nilai UAS anda : ");   
+            let persenUAS = input.questionFloat("Berapa persen nilai UAS: ");
+
+            let dataBARU;
+            if (pilihan === 1){
+                let sikap = input.questionFloat("Berapa nilai skap anda :");
+                let persensikap = input.questionFloat("Berapa persen nilai sikap :");
+            } 
+        }
+    if (pilihan === 1){
+        poinsaatini = (tugas *(persentugas / 100)) + (UTS *(persenUTS / 100)) + (UAS *(persenUAS / 100)) + (sikap*(persensikap / 100));
+        if (tugas === 0){ bobotkosong = Ptugas; namakomponen = "tugas";}
+        else if (UTS === 0){ bobotkosong = PUTS; namakomponen = "uts";}
+        else if (UAS === 0){ bobotkosong = PUAS; namakomponen = "uas";}
+        else if (sikap === 0){ bobotkosong = persensikapsikap; namakomponen = "sikap";}
+    } else {
+        poinsaatini = (tugas *(persentugas / 100)) + (UTS *(persenUTS / 100)) + (UAS *(persenUAS / 100))
+        if (tugas === 0){ bobotkosong = Ptugas; namakomponen = "tugas";}
+        else if (UTS === 0){ bobotkosong = PUTS; namakomponen = "uts";}
+        else if (UAS === 0){ bobotkosong = PUAS; namakomponen = "uas";}
+    }
+    if (namakomponen != ""){
+        let butuhpoin = targetakhir - poinsaatini;
+        let nilaidibutuhkan = butuhpoin / (bobotkosong / 100);
+        console.log(`Kamu butuh nilai ${komponen} sebeesar nilai ${nilaidibutuhkan.toFixed(2)}`);
+    }
+}
+}
+async function whatif(){
+    console.log("Perintah ini di gunakan untuk menjadi patokan nilai yang harus di kejar untuk mencapai suatu gpa yang di inginkan");
+    console.log("1. What if (Nilai matakuliah)");
+    console.log("2. What if (Nilai Keseluruhan)");
+    let pilihan = input.question("Pilih : ");
+    switch(pilihan){
+        case "1":
+            await whatifmatakuliah();
+            break;
+    }
+}
 async function main(){
     console.log("Gradebook GPA system");
     console.log("1. New data");
     console.log("2. Load data");
     console.log("3. Hitung data");
+    console.log("4. What if nilai");  
     let pilihan = input.question("Pilih :");
     switch(pilihan){
         case "1":
@@ -207,6 +261,9 @@ async function main(){
             break;
         case "3":
             await hitungipk();
+            break;
+        case "4":
+            await whatifnilai();
             break;
     }
 }           
