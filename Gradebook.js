@@ -237,17 +237,6 @@ async function whatifnilai(){
         }
     }
 }
-async function whatif(){
-    console.log("Perintah ini di gunakan untuk menjadi patokan nilai yang harus di kejar untuk mencapai suatu gpa yang di inginkan");
-    console.log("1. What if (Nilai matakuliah)");
-    console.log("2. What if (Nilai Keseluruhan)");
-    let pilihan = input.question("Pilih : ");
-    switch(pilihan){
-        case "1":
-            await whatifmatakuliah();
-            break;
-    }
-}
 async function main(){
     console.log("Gradebook GPA system");
     console.log("1. New data");
@@ -266,7 +255,7 @@ async function main(){
             await hitungipk();
             break;
         case "4":
-            await whatifnilai();
+            await whatifmatakuliah();
             break;
     }
 }           
