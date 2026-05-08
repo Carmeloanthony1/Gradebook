@@ -148,7 +148,6 @@ async function hitungipk(){
         let namafile = input.question("Masukan nama file yang ingin dihitung: ");
         const datajson = await fs.readFile(`${namafile}.json`, 'utf-8');
         const daftarmatkul = JSON.parse(datajson); //proses mengubah teks jadi smth yang bisa di olah oleh js
-
         let totalpoin = 0;
         let totalsks = 0;
         daftarmatkul.forEach((item) => {
@@ -195,44 +194,48 @@ async function hitungipk(){
 }
 
 async function whatifnilai(){
-    let targetakhir = input.question("Ingin mencari nilai berapa? : ");
-    let pilihan = input.question("(1) Humaniora / (2) Bidang : ");
-    console.log("Tulis 0 pada nilai yang belum ada");
+    let targetakhir = input.questionFloat("Ingin mencari nilai berapa? : ");
+    let tugas, UAS, UTS, sikap, persentugas, persenUAS, persenUTS, persensikap, bobotkosong;
+    let pilihan = 0;
+    let poinsaatini = 0;
+    let namakomponen = "";
     while(pilihan != 3){
+        console.log("Tulis 0 pada nilai yang ingin di cari");
+        pilihan = input.questionInt("(1) Humaniora / (2) Bidang / (3) Exit: ");
         if(pilihan === 1 || pilihan === 2 ){
-            let tugas = input.questionFloat("Berapa nilai tugas anda : ");
-            let persentugas = input.questionFloat("Berapa persen nilai tugas: ");
+            tugas = input.questionFloat("Berapa nilai tugas anda : ");
+            persentugas = input.questionFloat("Berapa persen nilai tugas: ");
 
-            let UTS = input.questionFloat("Berapa nilai UTS anda : ");         
-            let persenUTS = input.questionFloat("Berapa persen nilai UTS: ");
+            UTS = input.questionFloat("Berapa nilai UTS anda : ");         
+            persenUTS = input.questionFloat("Berapa persen nilai UTS: ");
 
-            let UAS = input.questionFloat("Berapa nilai UAS anda : ");   
-            let persenUAS = input.questionFloat("Berapa persen nilai UAS: ");
+            UAS = input.questionFloat("Berapa nilai UAS anda : ");   
+            persenUAS = input.questionFloat("Berapa persen nilai UAS: ");
 
             let dataBARU;
             if (pilihan === 1){
-                let sikap = input.questionFloat("Berapa nilai skap anda :");
-                let persensikap = input.questionFloat("Berapa persen nilai sikap :");
-            } 
+                sikap = input.questionFloat("Berapa nilai skap anda :");
+                persensikap = input.questionFloat("Berapa persen nilai sikap :");
+        
+                poinsaatini = (tugas *(persentugas / 100)) + (UTS *(persenUTS / 100)) + (UAS *(persenUAS / 100)) + (sikap*(persensikap / 100));
+                if (tugas === 0){ bobotkosong = persentugas; namakomponen = "tugas";}
+                else if (UTS === 0){ bobotkosong = persenUTS; namakomponen = "uts";}
+                else if (UAS === 0){ bobotkosong = persenUAS; namakomponen = "uas";}
+                else if (sikap === 0){ bobotkosong = persensikap; namakomponen = "sikap";}
+
+            } else {
+                poinsaatini = (tugas *(persentugas / 100)) + (UTS *(persenUTS / 100)) + (UAS *(persenUAS / 100))
+                if (tugas === 0){ bobotkosong = persentugas; namakomponen = "tugas";}
+                else if (UTS === 0){ bobotkosong = persenUTS; namakomponen = "uts";}
+                else if (UAS === 0){ bobotkosong = persenUAS; namakomponen = "uas";}
+            }
+            if (namakomponen != ""){
+                let butuhpoin = targetakhir - poinsaatini;
+                let nilaidibutuhkan = butuhpoin / (bobotkosong / 100);
+                console.log(`Kamu butuh nilai ${namakomponen} sebeesar nilai ${nilaidibutuhkan.toFixed(2)}`);
+            }
         }
-    if (pilihan === 1){
-        poinsaatini = (tugas *(persentugas / 100)) + (UTS *(persenUTS / 100)) + (UAS *(persenUAS / 100)) + (sikap*(persensikap / 100));
-        if (tugas === 0){ bobotkosong = Ptugas; namakomponen = "tugas";}
-        else if (UTS === 0){ bobotkosong = PUTS; namakomponen = "uts";}
-        else if (UAS === 0){ bobotkosong = PUAS; namakomponen = "uas";}
-        else if (sikap === 0){ bobotkosong = persensikapsikap; namakomponen = "sikap";}
-    } else {
-        poinsaatini = (tugas *(persentugas / 100)) + (UTS *(persenUTS / 100)) + (UAS *(persenUAS / 100))
-        if (tugas === 0){ bobotkosong = Ptugas; namakomponen = "tugas";}
-        else if (UTS === 0){ bobotkosong = PUTS; namakomponen = "uts";}
-        else if (UAS === 0){ bobotkosong = PUAS; namakomponen = "uas";}
     }
-    if (namakomponen != ""){
-        let butuhpoin = targetakhir - poinsaatini;
-        let nilaidibutuhkan = butuhpoin / (bobotkosong / 100);
-        console.log(`Kamu butuh nilai ${komponen} sebeesar nilai ${nilaidibutuhkan.toFixed(2)}`);
-    }
-}
 }
 async function whatif(){
     console.log("Perintah ini di gunakan untuk menjadi patokan nilai yang harus di kejar untuk mencapai suatu gpa yang di inginkan");
